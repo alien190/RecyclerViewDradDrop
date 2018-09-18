@@ -13,8 +13,8 @@ public class MessageTemplate {
         mItems.add(new TextTemplateItem(text));
     }
 
-    public void addParameterItem(String text) {
-        mItems.add(new ParameterTemplateItem(text));
+    public void addParameterItem(int type) {
+        mItems.add(new ParameterTemplateItem(type));
     }
 
     public CommonTemplateItem getItem(int pos) {
@@ -70,8 +70,16 @@ public class MessageTemplate {
     }
 
     public class ParameterTemplateItem extends CommonTemplateItem {
-        public ParameterTemplateItem(String text) {
-            super(text);
+        private int mType;
+
+        public ParameterTemplateItem(int type) {
+            super("param1");
+            setType(type);
+        }
+
+        public void setType(int type) {
+            mType = type;
+            setText("param type" + mType);
         }
     }
 }

@@ -69,18 +69,20 @@ public class MessageTemplateFragment extends Fragment implements MessageTemplate
         }
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // inflater.inflate(R.menu.add_menu, menu);
-        for (int i = 0; i < mAdapter.getTypesCount(); i++) {
-            menu.add(Menu.NONE, i, Menu.NONE, mAdapter.getTypesItem(i));
-        }
+         inflater.inflate(R.menu.add_menu, menu);
+//        for (int i = 0; i < mAdapter.getTypesCount(); i++) {
+//            menu.add(Menu.NONE, i, Menu.NONE, mAdapter.getTypesItem(i));
+//        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return mAdapter.addItem(item.getItemId());
+        if(item.getItemId() == R.id.itmText) {
+            return mAdapter.addItem(MessageTemplateListAdapter.ITEM_TYPE_TEXT);
+        }
+        return mAdapter.addItem(MessageTemplateListAdapter.ITEM_TYPE_PARAMETER);
     }
 
     @Override
@@ -94,6 +96,7 @@ public class MessageTemplateFragment extends Fragment implements MessageTemplate
                 .setTitle("Введите текст")
                 .setView(R.layout.dialog_text)
                 .setPositiveButton("Сохранить", null)
+                .setNegativeButton("Отмена", null)
                 .create();
         alertDialog.show();
 
@@ -115,7 +118,22 @@ public class MessageTemplateFragment extends Fragment implements MessageTemplate
 
 
     @Override
-    public void onEditParameterItem(int pos) {
-
+    public void onEditParameterItem(final int pos) {
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                .setTitle("Выберите тип параметра")
+                .setNegativeButton("Отмена", null)
+                .setItems(mAdapter.getParametersTypes(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int type) {
+                        if (pos == MessageTemplateListAdapter.NEW_ITEM) {
+                            mAdapter.addParameterItem(type);
+                        } else {
+                            mAdapter.updateParameterItem(pos, type);
+                        }
+                        dialogInterface.dismiss();
+                    }
+                })
+                .create();
+        alertDialog.show();
     }
 }

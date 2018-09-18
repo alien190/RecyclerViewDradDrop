@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:title="add"/>
+    <item android:title="Добавить текстовое поле" android:id="@+id/itmText"/>
+    <item android:title="Добавить параметр" android:id="@+id/imtParam"/>
 </menu>

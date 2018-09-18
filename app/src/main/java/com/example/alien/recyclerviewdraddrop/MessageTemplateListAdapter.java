@@ -10,18 +10,20 @@ import com.example.alien.recyclerviewdraddrop.viewHolder.CommonItemViewHolder;
 import com.example.alien.recyclerviewdraddrop.viewHolder.ParameterItemViewHolder;
 import com.example.alien.recyclerviewdraddrop.viewHolder.TextItemViewHolder;
 
+import java.util.ArrayList;
+
 public class MessageTemplateListAdapter extends RecyclerView.Adapter<CommonItemViewHolder>
         implements ItemTouchHelperAdapter, CommonItemViewHolder.IOnItemClickListener {
 
     private final MessageTemplate mMessageTemplate = new MessageTemplate();
-    private static final int ITEM_TYPE_TEXT = 1;
-    private static final int ITEM_TYPE_PARAMETER = 2;
+    public static final int ITEM_TYPE_TEXT = 1;
+    public static final int ITEM_TYPE_PARAMETER = 2;
     public static final int NEW_ITEM = -1;
     private IOnEditItemListener mIOnEditItemListener;
 
     public MessageTemplateListAdapter() {
         mMessageTemplate.addTextItem("text1");
-        mMessageTemplate.addParameterItem("param1");
+        mMessageTemplate.addParameterItem(1);
         mMessageTemplate.addTextItem("text2");
         mMessageTemplate.addTextItem("text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3 text3");
     }
@@ -84,9 +86,16 @@ public class MessageTemplateListAdapter extends RecyclerView.Adapter<CommonItemV
         }
     }
 
+    public CharSequence[] getParametersTypes(){
+        ArrayList<String> list = new ArrayList<>();
+        for(int i=0; i<ParameterItemViewHolder.getTypesCount(); i++) {
+            list.add(ParameterItemViewHolder.getTypesItem(i));
+        }
+        return list.toArray(new CharSequence[0]);
+    }
     public boolean addItem(int type) {
         if (mIOnEditItemListener != null) {
-            if (type == 1) {
+            if (type == ITEM_TYPE_TEXT) {
                 mIOnEditItemListener.onEditTextItem(NEW_ITEM);
             } else {
                 mIOnEditItemListener.onEditParameterItem(NEW_ITEM);
@@ -97,6 +106,11 @@ public class MessageTemplateListAdapter extends RecyclerView.Adapter<CommonItemV
 
     public void addTextItem(String text) {
         mMessageTemplate.addTextItem(text);
+        notifyItemInserted(mMessageTemplate.getItemCount() - 1);
+    }
+
+    public void addParameterItem(int type) {
+        mMessageTemplate.addParameterItem(type);
         notifyItemInserted(mMessageTemplate.getItemCount() - 1);
     }
 
@@ -117,6 +131,13 @@ public class MessageTemplateListAdapter extends RecyclerView.Adapter<CommonItemV
         MessageTemplate.CommonTemplateItem commonTemplateItem = mMessageTemplate.getItem(pos);
         if (commonTemplateItem != null) {
             commonTemplateItem.setText(text);
+            notifyItemChanged(pos);
+        }
+    }
+    public void updateParameterItem(int pos, int type) {
+        MessageTemplate.CommonTemplateItem commonTemplateItem = mMessageTemplate.getItem(pos);
+        if (commonTemplateItem != null && commonTemplateItem instanceof MessageTemplate.ParameterTemplateItem) {
+            ((MessageTemplate.ParameterTemplateItem)commonTemplateItem).setType(type);
             notifyItemChanged(pos);
         }
     }
