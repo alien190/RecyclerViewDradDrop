@@ -73,7 +73,7 @@ public class MessageTemplate {
         private int mType;
 
         public ParameterTemplateItem(int type) {
-            super("param1");
+            super("");
             setType(type);
         }
 
