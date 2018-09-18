@@ -1,6 +1,8 @@
 package com.example.alien.recyclerviewdraddrop;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -24,7 +26,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         implements ItemTouchHelperAdapter {
 
     private static final String[] STRINGS = new String[]{
-            "One One One One One One One One One One One One One One One One One One One One One One One One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"
+            "Zero", "One One One One One One One One One One One One One One One One One One One One One One One One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"
     };
 
     private final List<String> mItems = new ArrayList<>();
@@ -99,22 +101,27 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     public static class ItemViewHolder extends RecyclerView.ViewHolder implements
             ItemTouchHelperViewHolder {
 
-        public final TextView textView;
+        private final TextView textView;
+        private final CardView mCardView;
+        private ColorStateList mColorStateList;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView) itemView;
-
+            textView = itemView.findViewById(R.id.tvItem);
+            mCardView = itemView.findViewById(R.id.cardView);
         }
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundColor(Color.LTGRAY);
+            //itemView.setBackgroundColor(Color.LTGRAY);
+            mColorStateList = mCardView.getCardBackgroundColor();
+            mCardView.setCardBackgroundColor(Color.GREEN);
         }
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor(0);
+            //itemView.setBackgroundColor(0);
+            mCardView.setCardBackgroundColor(mColorStateList);
         }
     }
 }

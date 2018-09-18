@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.alien.recyclerviewdraddrop.common.CustomLayoutManager;
 import com.example.alien.recyclerviewdraddrop.helper.SimpleItemTouchHelperCallback;
 
 
@@ -49,12 +50,13 @@ public class RecyclerListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
-        StaggeredGridLayoutManager staggeredGridLayoutManager =
-                new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        //StaggeredGridLayoutManager staggeredGridLayoutManager =
+        //        new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
 
        // staggeredGridLayoutManager.generateLayoutParams()
 
-        recyclerView.setLayoutManager(staggeredGridLayoutManager);
+        //recyclerView.setLayoutManager(staggeredGridLayoutManager);
+        recyclerView.setLayoutManager(new CustomLayoutManager());
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
