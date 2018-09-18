@@ -1,23 +1,23 @@
 package com.example.alien.recyclerviewdraddrop;
 
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.alien.recyclerviewdraddrop.helper.ItemTouchHelperAdapter;
-import com.example.alien.recyclerviewdraddrop.helper.ItemTouchHelperViewHolder;
+import com.example.alien.recyclerviewdraddrop.viewHolder.CommonItemViewHolder;
+import com.example.alien.recyclerviewdraddrop.viewHolder.ParameterItemViewHolder;
+import com.example.alien.recyclerviewdraddrop.viewHolder.TextItemViewHolder;
 
-public class MessageTemplateListAdapter extends RecyclerView.Adapter<MessageTemplateListAdapter.CommonItemViewHolder>
-        implements ItemTouchHelperAdapter {
+public class MessageTemplateListAdapter extends RecyclerView.Adapter<CommonItemViewHolder>
+        implements ItemTouchHelperAdapter, CommonItemViewHolder.IOnItemClickListener {
 
     private final MessageTemplate mMessageTemplate = new MessageTemplate();
     private static final int ITEM_TYPE_TEXT = 1;
     private static final int ITEM_TYPE_PARAMETER = 2;
+    public static final int NEW_ITEM = -1;
+    private IOnEditItemListener mIOnEditItemListener;
 
     public MessageTemplateListAdapter() {
         mMessageTemplate.addTextItem("text1");
@@ -35,12 +35,13 @@ public class MessageTemplateListAdapter extends RecyclerView.Adapter<MessageTemp
         } else {
             commonItemViewHolder = new TextItemViewHolder(view);
         }
+        commonItemViewHolder.setIOnItemClickListener(this);
         return commonItemViewHolder;
     }
 
     @Override
     public void onBindViewHolder(CommonItemViewHolder holder, int position) {
-        holder.onBind(mMessageTemplate.getItem(position));
+        holder.onBind(mMessageTemplate.getItem(position), position);
     }
 
     @Override
@@ -71,63 +72,69 @@ public class MessageTemplateListAdapter extends RecyclerView.Adapter<MessageTemp
         }
     }
 
-    public int getTypesCount(){
-        return 3;
+    public int getTypesCount() {
+        return TextItemViewHolder.getTypesCount() + ParameterItemViewHolder.getTypesCount();
     }
+
     public String getTypesItem(int pos) {
-        return String.valueOf(pos);
+        if (pos < TextItemViewHolder.getTypesCount()) {
+            return TextItemViewHolder.getTypesItem(pos);
+        } else {
+            return ParameterItemViewHolder.getTypesItem(pos - TextItemViewHolder.getTypesCount());
+        }
     }
-    public boolean addItem(int type){
+
+    public boolean addItem(int type) {
+        if (mIOnEditItemListener != null) {
+            if (type == 1) {
+                mIOnEditItemListener.onEditTextItem(NEW_ITEM);
+            } else {
+                mIOnEditItemListener.onEditParameterItem(NEW_ITEM);
+            }
+        }
         return true;
     }
 
-    public abstract class CommonItemViewHolder extends RecyclerView.ViewHolder implements
-            ItemTouchHelperViewHolder {
+    public void addTextItem(String text) {
+        mMessageTemplate.addTextItem(text);
+        notifyItemInserted(mMessageTemplate.getItemCount() - 1);
+    }
 
-        protected final TextView mTextView;
-        protected final CardView mCardView;
-        private ColorStateList mColorStateList;
-
-        public CommonItemViewHolder(final View itemView) {
-            super(itemView);
-            mTextView = itemView.findViewById(R.id.tvItem);
-            mCardView = itemView.findViewById(R.id.cardView);
-//            mCardView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Toast.makeText(itemView.getContext(), "select", Toast.LENGTH_SHORT).show();
-//                }
-//            });
+    public String getItemText(int pos) {
+        MessageTemplate.CommonTemplateItem commonTemplateItem = mMessageTemplate.getItem(pos);
+        if (commonTemplateItem != null) {
+            return commonTemplateItem.getText();
+        } else {
+            return "";
         }
+    }
 
-        @Override
-        public void onItemSelected() {
-            mColorStateList = mCardView.getCardBackgroundColor();
-            mCardView.setCardBackgroundColor(Color.GREEN);
+    public void setIOnEditItemListener(IOnEditItemListener IOnEditItemListener) {
+        mIOnEditItemListener = IOnEditItemListener;
+    }
+
+    public void updateTextItem(int pos, String text) {
+        MessageTemplate.CommonTemplateItem commonTemplateItem = mMessageTemplate.getItem(pos);
+        if (commonTemplateItem != null) {
+            commonTemplateItem.setText(text);
+            notifyItemChanged(pos);
         }
+    }
 
-        @Override
-        public void onItemClear() {
-            mCardView.setCardBackgroundColor(mColorStateList);
-        }
-
-        public void onBind(MessageTemplate.CommonTemplateItem item) {
-            if (item != null) {
-                mTextView.setText(item.getText());
+    @Override
+    public void onItemClick(int pos) {
+        if (mIOnEditItemListener != null) {
+            if (getItemViewType(pos) == ITEM_TYPE_PARAMETER) {
+                mIOnEditItemListener.onEditParameterItem(pos);
+            } else {
+                mIOnEditItemListener.onEditTextItem(pos);
             }
         }
     }
 
-    public class TextItemViewHolder extends CommonItemViewHolder {
-        public TextItemViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
+    interface IOnEditItemListener {
+        void onEditTextItem(int pos);
 
-    public class ParameterItemViewHolder extends CommonItemViewHolder {
-        public ParameterItemViewHolder(View itemView) {
-            super(itemView);
-            mCardView.setCardBackgroundColor(Color.YELLOW);
-        }
+        void onEditParameterItem(int pos);
     }
 }

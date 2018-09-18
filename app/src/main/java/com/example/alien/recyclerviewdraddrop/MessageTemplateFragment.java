@@ -1,8 +1,10 @@
 package com.example.alien.recyclerviewdraddrop;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.alien.recyclerviewdraddrop.common.CustomLayoutManager;
 import com.example.alien.recyclerviewdraddrop.helper.SimpleItemTouchHelperCallback;
@@ -18,7 +21,7 @@ import com.example.alien.recyclerviewdraddrop.helper.SimpleItemTouchHelperCallba
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MessageTemplateFragment extends Fragment {
+public class MessageTemplateFragment extends Fragment implements MessageTemplateListAdapter.IOnEditItemListener {
 
     private ItemTouchHelper mItemTouchHelper;
     private MessageTemplateListAdapter mAdapter;
@@ -51,24 +54,26 @@ public class MessageTemplateFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState == null) {
+            mAdapter = new MessageTemplateListAdapter();
+            mAdapter.setIOnEditItemListener(this);
+            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.setAdapter(mAdapter);
+            mRecyclerView.setLayoutManager(new CustomLayoutManager());
 
-        mAdapter = new MessageTemplateListAdapter();
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new CustomLayoutManager());
+            ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mAdapter);
+            mItemTouchHelper = new ItemTouchHelper(callback);
+            mItemTouchHelper.attachToRecyclerView(mRecyclerView);
 
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mAdapter);
-        mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
-
-        setHasOptionsMenu(true);
+            setHasOptionsMenu(true);
+        }
     }
 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-       // inflater.inflate(R.menu.add_menu, menu);
-        for(int i = 0; i< mAdapter.getTypesCount();i++){
+        // inflater.inflate(R.menu.add_menu, menu);
+        for (int i = 0; i < mAdapter.getTypesCount(); i++) {
             menu.add(Menu.NONE, i, Menu.NONE, mAdapter.getTypesItem(i));
         }
     }
@@ -76,5 +81,41 @@ public class MessageTemplateFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mAdapter.addItem(item.getItemId());
+    }
+
+    @Override
+    public void onEditTextItem(final int pos) {
+        String text = "";
+        if (pos != MessageTemplateListAdapter.NEW_ITEM) {
+            text = mAdapter.getItemText(pos);
+        }
+
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                .setTitle("Введите текст")
+                .setView(R.layout.dialog_text)
+                .setPositiveButton("Сохранить", null)
+                .create();
+        alertDialog.show();
+
+        final EditText editText = alertDialog.findViewById(R.id.etText);
+        editText.setText(text);
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String text = editText.getText().toString();
+                if (pos == MessageTemplateListAdapter.NEW_ITEM) {
+                    mAdapter.addTextItem(text);
+                } else {
+                    mAdapter.updateTextItem(pos, text);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void onEditParameterItem(int pos) {
+
     }
 }
