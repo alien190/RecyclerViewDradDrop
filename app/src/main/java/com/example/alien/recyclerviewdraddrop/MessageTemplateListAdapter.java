@@ -71,6 +71,16 @@ public class MessageTemplateListAdapter extends RecyclerView.Adapter<MessageTemp
         }
     }
 
+    public int getTypesCount(){
+        return 3;
+    }
+    public String getTypesItem(int pos) {
+        return String.valueOf(pos);
+    }
+    public boolean addItem(int type){
+        return true;
+    }
+
     public abstract class CommonItemViewHolder extends RecyclerView.ViewHolder implements
             ItemTouchHelperViewHolder {
 

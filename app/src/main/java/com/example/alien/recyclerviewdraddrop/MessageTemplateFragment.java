@@ -1,24 +1,22 @@
 package com.example.alien.recyclerviewdraddrop;
 
-import android.arch.lifecycle.ViewModel;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 
 import com.example.alien.recyclerviewdraddrop.common.CustomLayoutManager;
 import com.example.alien.recyclerviewdraddrop.helper.SimpleItemTouchHelperCallback;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MessageTemplateFragment extends Fragment {
 
@@ -26,15 +24,11 @@ public class MessageTemplateFragment extends Fragment {
     private MessageTemplateListAdapter mAdapter;
     @BindView(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
-    @BindView(R.id.btnAddNewTemplateItem)
-    protected ImageButton mAddButton;
     private View mView;
 
 
     public static MessageTemplateFragment newInstance() {
-
         Bundle args = new Bundle();
-
         MessageTemplateFragment fragment = new MessageTemplateFragment();
         fragment.setArguments(args);
         fragment.setRetainInstance(true);
@@ -58,7 +52,6 @@ public class MessageTemplateFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         mAdapter = new MessageTemplateListAdapter();
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
@@ -68,17 +61,20 @@ public class MessageTemplateFragment extends Fragment {
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(mRecyclerView);
 
-        registerForContextMenu(mAddButton);
+        setHasOptionsMenu(true);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+       // inflater.inflate(R.menu.add_menu, menu);
+        for(int i = 0; i< mAdapter.getTypesCount();i++){
+            menu.add(Menu.NONE, i, Menu.NONE, mAdapter.getTypesItem(i));
+        }
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add("ddd");
-    }
-
-    @OnClick(R.id.btnAddNewTemplateItem)
-    protected void onClickAddItem(View view){
-        getActivity().openContextMenu(view);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mAdapter.addItem(item.getItemId());
     }
 }
