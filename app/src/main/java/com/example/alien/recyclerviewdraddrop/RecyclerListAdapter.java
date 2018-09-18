@@ -2,9 +2,11 @@ package com.example.alien.recyclerviewdraddrop;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.example.alien.recyclerviewdraddrop.helper.ItemTouchHelperAdapter;
@@ -22,7 +24,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         implements ItemTouchHelperAdapter {
 
     private static final String[] STRINGS = new String[]{
-            "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"
+            "One One One One One One One One One One One One One One One One One One One One One One One One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"
     };
 
     private final List<String> mItems = new ArrayList<>();
@@ -32,8 +34,41 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     }
 
     @Override
-    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_main, parent, false);
+    public ItemViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_main, parent, false);
+
+//        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            @Override
+//            public boolean onPreDraw() {
+//                final ViewGroup.LayoutParams lp = view.getLayoutParams();
+//                if (lp instanceof StaggeredGridLayoutManager.LayoutParams) {
+//                    StaggeredGridLayoutManager.LayoutParams sglp =
+//                            (StaggeredGridLayoutManager.LayoutParams) lp;
+//                    sglp.setFullSpan(false);
+//                    sglp.
+//                    sglp.width = view.getWidth();
+//                    sglp.height = view.getHeight();
+////                            break;
+////                        case TYPE_HALF:
+////                            sglp.setFullSpan(false);
+////                            sglp.width = itemView.getWidth() / 2;
+////                            break;
+////                        case TYPE_QUARTER:
+////                            sglp.setFullSpan(false);
+////                            sglp.width = itemView.getWidth() / 2;
+////                            sglp.height = itemView.getHeight() / 2;
+////                            break;
+////                    }
+//                    view.setLayoutParams(sglp);
+//                    final StaggeredGridLayoutManager lm =
+//                            (StaggeredGridLayoutManager) ((RecyclerView) parent).getLayoutManager();
+//                    lm.invalidateSpanAssignments();
+//                }
+//                view.getViewTreeObserver().removeOnPreDrawListener(this);
+//                return true;
+//            }
+//        });
+
         ItemViewHolder itemViewHolder = new ItemViewHolder(view);
         return itemViewHolder;
     }
@@ -69,6 +104,7 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         public ItemViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView;
+
         }
 
         @Override
